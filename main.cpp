@@ -12,37 +12,37 @@ using namespace std;
 // sources on Windows (laptop battery, bluetooth devices, etc.)
 
 // placeholder function i found online, i do not trust this to work at all
-void PrintBluetoothBatteries() {
-    // GUID_DEVCLASS_BLUETOOTH lists paired Bluetooth devices
-    HDEVINFO devInfo = SetupDiGetClassDevs(
-        &GUID_DEVCLASS_BLUETOOTH, nullptr, nullptr, DIGCF_PRESENT);
-
-    if (devInfo == INVALID_HANDLE_VALUE) return;
-
-    SP_DEVINFO_DATA devData{};
-    devData.cbSize = sizeof(SP_DEVINFO_DATA);
-
-    for (DWORD i = 0; SetupDiEnumDeviceInfo(devInfo, i, &devData); i++) {
-        // Get friendly name
-        WCHAR name[256]{};
-        SetupDiGetDeviceRegistryPropertyW(
-            devInfo, &devData, SPDRP_FRIENDLYNAME, nullptr,
-            (PBYTE)name, sizeof(name), nullptr);
-
-        // Get battery level property
-        DEVPROPTYPE propType;
-        BYTE battery = 0;
-        BOOL ok = SetupDiGetDevicePropertyW(
-            devInfo, &devData, &DEVPKEY_Bluetooth_Battery,
-            &propType, &battery, sizeof(battery), nullptr, 0);
-
-        if (ok) {
-            std::wcout << name << L": " << (int)battery << L"%\n";
-        }
-    }
-
-    SetupDiDestroyDeviceInfoList(devInfo);
-}
+// void PrintBluetoothBatteries() {
+//     // GUID_DEVCLASS_BLUETOOTH lists paired Bluetooth devices
+//     HDEVINFO devInfo = SetupDiGetClassDevs(
+//         &GUID_DEVCLASS_BLUETOOTH, nullptr, nullptr, DIGCF_PRESENT);
+//
+//     if (devInfo == INVALID_HANDLE_VALUE) return;
+//
+//     SP_DEVINFO_DATA devData{};
+//     devData.cbSize = sizeof(SP_DEVINFO_DATA);
+//
+//     for (DWORD i = 0; SetupDiEnumDeviceInfo(devInfo, i, &devData); i++) {
+//         // Get friendly name
+//         WCHAR name[256]{};
+//         SetupDiGetDeviceRegistryPropertyW(
+//             devInfo, &devData, SPDRP_FRIENDLYNAME, nullptr,
+//             (PBYTE)name, sizeof(name), nullptr);
+//
+//         // Get battery level property
+//         DEVPROPTYPE propType;
+//         BYTE battery = 0;
+//         BOOL ok = SetupDiGetDevicePropertyW(
+//             devInfo, &devData, &DEVPKEY_Bluetooth_Battery,
+//             &propType, &battery, sizeof(battery), nullptr, 0);
+//
+//         if (ok) {
+//             std::wcout << name << L": " << (int)battery << L"%\n";
+//         }
+//     }
+//
+//     SetupDiDestroyDeviceInfoList(devInfo);
+// }
 
 int main() {
     SYSTEM_POWER_STATUS status;

@@ -2,12 +2,23 @@
 
 #include <iostream>
 #include <windows.h> // windows battery information
-// for bluetooth device battery below
+// for bluetooth device name below
 #include <setupapi.h>
 #include <devguid.h>
 #include <devpkey.h>
 #include <cfgmgr32.h>
+// for bluetooth device battery below
+// #include <winrt/Windows.Foundation.h>
+// #include <winrt/Windows.Devices.Enumeration.h>
+// #include <winrt/Windows.Devices.Bluetooth.h>
+// #include <winrt/Windows.Devices.Bluetooth.GenericAttributeProfile.h>
+// #include <winrt/Windows.Storage.Streams.h>
 using namespace std;
+// using namespace winrt;
+// using namespace winrt::Windows::Devices::Enumeration;
+// using namespace winrt::Windows::Devices::Bluetooth;
+// using namespace winrt::Windows::Devices::Bluetooth::GenericAttributeProfile;
+// using namespace winrt::Windows::Storage::Streams;
 
 #pragma comment(lib, "Setupapi.lib")
 #pragma comment(lib, "Cfgmgr32.lib")
@@ -37,7 +48,7 @@ int wmain() {
     HDEVINFO hDevInfo = SetupDiGetClassDevsW(&GUID_DEVCLASS_BLUETOOTH, nullptr, nullptr, DIGCF_PRESENT);
     if (hDevInfo == INVALID_HANDLE_VALUE)
     {
-        std::wcerr << L"Failed to get Bluetooth device list. Error: " << GetLastError() << std::endl;
+        wcerr << L"Failed to get Bluetooth device list. Error: " << GetLastError() << endl;
         return 1;
     }
  
@@ -57,20 +68,26 @@ int wmain() {
  
         if (!isConnected)
             continue;
+
+        WCHAR instanceId[512] = L"";
+        if (!SetupDiGetDeviceInstanceIdW(hDevInfo, &data, instanceId, ARRAYSIZE(instanceId), nullptr))
+            continue;
+        if (_wcsnicmp(instanceId, L"BTHENUM\\Dev_", 12) != 0)
+            continue;
  
         WCHAR name[512] = L"";
         DEVPROPTYPE propType;
         if (SetupDiGetDevicePropertyW(hDevInfo, &data, &DEVPKEY_Device_FriendlyName, &propType,
             reinterpret_cast<PBYTE>(name), sizeof(name), nullptr, 0))
         {
-            std::wcout << name << std::endl;
+            wcout << name << endl;
             foundAny = true;
         }
     }
  
     if (!foundAny)
     {
-        std::wcout << L"No Bluetooth devices are currently connected." << std::endl;
+        wcout << L"No Bluetooth devices are currently connected." << endl;
     }
  
     SetupDiDestroyDeviceInfoList(hDevInfo);
